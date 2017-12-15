@@ -16,7 +16,6 @@ const authenticate = require('./concerns/authenticate')
 const setUser = require('./concerns/set-current-user')
 const setModel = require('./concerns/set-mongoose-model')
 
-
 const index = (req, res, next) => {
   Upload.find()
     .then(uploads => res.json({
@@ -33,14 +32,13 @@ const show = (req, res) => {
 }
 
 const create = (req, res, next) => {
-
   const options = {
     path: req.file.path,
     title: req.body.image.title,
     mimetype: req.file.mimetype,
     originalname: req.file.originalname
   }
-
+  console.log('request is', req)
   s3Upload(options)
     .then((s3response) => {
       return Upload.create({
@@ -48,13 +46,13 @@ const create = (req, res, next) => {
         title: options.title
       })
     })
-    .then(upload =>
-      res.status(201)
+    .then(upload => {
+      return res.status(201)
         .json({
           upload: upload.toJSON()
-        }))
+        })
+    })
     .catch(next)
-    .then(() => mongoose.connection.close())
 }
 
 const update = (req, res, next) => {
