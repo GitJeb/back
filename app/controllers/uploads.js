@@ -38,13 +38,15 @@ const create = (req, res, next) => {
     mimetype: req.file.mimetype,
     originalname: req.file.originalname
   }
-  console.log('request is', req)
+
   s3Upload(options)
     .then((s3response) => {
-      return Upload.create({
+      const upload = Object.assign(req.body.image, {
+        _owner: req.user._id,
         url: s3response['Location'],
         title: options.title
       })
+      return Upload.create(upload)
     })
     .then(upload => {
       return res.status(201)
@@ -76,7 +78,7 @@ module.exports = controller({
   update,
   destroy
 }, { before: [
-  { method: setUser, only: ['index', 'show'] },
+  { method: setUser, only: ['index', 'show', 'create'] },
   { method: authenticate, except: ['index', 'show', 'create'] },
   { method: setModel(Upload), only: ['show'] },
   { method: setModel(Upload, { forUser: true }), only: ['update', 'destroy'] },
