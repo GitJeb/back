@@ -66,9 +66,14 @@ const update = (req, res, next) => {
 }
 
 const destroy = (req, res, next) => {
-  req.upload.remove()
-    .then(() => res.sendStatus(204))
-    .catch(next)
+  Upload.remove({
+    _id: req.upload._id
+  }, function (err, upload) {
+    if (err) {
+      res.send(err)
+    }
+    res.json({ message: 'Successfully deleted' })
+  })
 }
 
 module.exports = controller({
