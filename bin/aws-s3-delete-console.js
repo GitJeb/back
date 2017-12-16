@@ -3,7 +3,6 @@
 // const mongoose = require('../app/middleware/mongoose')
 const s3Delete = require('../lib/s3-delete.js')
 
-
 const params = {
   Key: process.argv[2]
 }
