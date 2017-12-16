@@ -18,4 +18,8 @@ module.exports = require('lib/wiring/routes')
 .resources('users', { only: ['index', 'show'] })
 
 // all routes created
+<<<<<<< HEAD
 .resources('uploads', { only: ['index', 'create', 'destroy'] })
+=======
+.resources('uploads')
+>>>>>>> Add s3upload delete framework

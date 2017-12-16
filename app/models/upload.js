@@ -9,6 +9,10 @@ const uploadSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  aws_key: {
+    type: String,
+    required: true
+  },
   _owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
