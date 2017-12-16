@@ -15,8 +15,11 @@ const uploadSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toObject: { virtuals: true }
 })
+
+uploadSchema.set('toObject', {virtuals: true})
 
 const Upload = mongoose.model('Upload', uploadSchema)
 

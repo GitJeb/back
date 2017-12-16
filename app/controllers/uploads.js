@@ -3,6 +3,8 @@ const mongoose = require('../../app/middleware/mongoose')
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
 const Upload = models.upload
+const User = models.user
+
 
 // Multer
 const multer = require('multer')
@@ -18,9 +20,11 @@ const setModel = require('./concerns/set-mongoose-model')
 
 const index = (req, res, next) => {
   Upload.find()
+    .populate('_owner')
     .then(uploads => res.json({
-      uploads: uploads.map((e) =>
-        e.toJSON({ virtuals: true, user: req.user }))
+      uploads: uploads.map((e) => {
+        return e.toJSON({virtuals: true, user: req.user})
+      })
     }))
     .catch(next)
 }
@@ -75,6 +79,7 @@ const destroy = (req, res, next) => {
     res.json({ message: 'Successfully deleted' })
   })
 }
+
 
 module.exports = controller({
   index,
