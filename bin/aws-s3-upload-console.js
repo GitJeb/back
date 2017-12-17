@@ -17,7 +17,6 @@ const options = {
 s3Upload(options)
   // create record in mongoose db
   .then((s3response) => {
-    console.log(s3response)
     return Upload.create({
       url: s3response['Location'],
       title: process.argv[3],

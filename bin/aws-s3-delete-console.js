@@ -7,5 +7,4 @@ const params = {
   Key: process.argv[2]
 }
 
-console.log(params.Key)
 s3Delete(params)

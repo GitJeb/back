@@ -48,7 +48,8 @@ const create = (req, res, next) => {
       const upload = Object.assign(req.body.image, {
         _owner: req.user._id,
         url: s3response['Location'],
-        title: options.title
+        title: options.title,
+        aws_key: s3response.Key
       })
       return Upload.create(upload)
     })
