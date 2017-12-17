@@ -12,6 +12,7 @@ const multerUpload = multer({ dest: '/tmp' })
 
 // AWS s#
 const s3Upload = require('../../lib/s3-upload.js')
+const s3Delete = require('../../lib/s3-delete.js')
 
 // Set User Actions
 const authenticate = require('./concerns/authenticate')
@@ -64,23 +65,26 @@ const create = (req, res, next) => {
 
 const update = (req, res, next) => {
   delete req.body.upload._owner  // disallow owner reassignment.
-
   req.upload.update(req.body.upload)
     .then(() => res.sendStatus(204))
     .catch(next)
 }
 
 const destroy = (req, res, next) => {
-  Upload.remove({
-    _id: req.upload._id
-  }, function (err, upload) {
-    if (err) {
-      res.send(err)
-    }
-    res.json({ message: 'Successfully deleted' })
-  })
-}
+  req.upload.remove()
+    .then(() => s3Delete(req.upload.aws_key))
+    .then(() => res.status(200).json({ message: 'Successfully deleted' }))
+    .catch(next)
 
+  // Upload.remove({
+  //   _id: req.upload._id
+  // }, function (err, upload) {
+  //   if (err) {
+  //     res.send(err)
+  //   }
+  //   res.json({ message: 'Successfully deleted' })
+  // })
+}
 
 module.exports = controller({
   index,
