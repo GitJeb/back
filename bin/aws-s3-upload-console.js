@@ -19,7 +19,9 @@ s3Upload(options)
   .then((s3response) => {
     return Upload.create({
       url: s3response['Location'],
-      title: process.argv[3]
+      title: process.argv[3],
+      aws_key: s3response.key,
+      _owner: '5a32b45fd6632e72545b2cf5'
     })
   })
   // console.log errors

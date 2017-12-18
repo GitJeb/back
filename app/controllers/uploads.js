@@ -3,6 +3,8 @@ const mongoose = require('../../app/middleware/mongoose')
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
 const Upload = models.upload
+const User = models.user
+
 
 // Multer
 const multer = require('multer')
@@ -10,6 +12,7 @@ const multerUpload = multer({ dest: '/tmp' })
 
 // AWS s#
 const s3Upload = require('../../lib/s3-upload.js')
+const s3Delete = require('../../lib/s3-delete.js')
 
 // Set User Actions
 const authenticate = require('./concerns/authenticate')
@@ -18,9 +21,11 @@ const setModel = require('./concerns/set-mongoose-model')
 
 const index = (req, res, next) => {
   Upload.find()
+    .populate('_owner')
     .then(uploads => res.json({
-      uploads: uploads.map((e) =>
-        e.toJSON({ virtuals: true, user: req.user }))
+      uploads: uploads.map((e) => {
+        return e.toJSON({virtuals: true, user: req.user})
+      })
     }))
     .catch(next)
 }
@@ -38,13 +43,16 @@ const create = (req, res, next) => {
     mimetype: req.file.mimetype,
     originalname: req.file.originalname
   }
-  console.log('request is', req)
+
   s3Upload(options)
     .then((s3response) => {
-      return Upload.create({
+      const upload = Object.assign(req.body.image, {
+        _owner: req.user._id,
         url: s3response['Location'],
-        title: options.title
+        title: options.title,
+        aws_key: s3response.Key
       })
+      return Upload.create(upload)
     })
     .then(upload => {
       return res.status(201)
@@ -57,7 +65,6 @@ const create = (req, res, next) => {
 
 const update = (req, res, next) => {
   delete req.body.upload._owner  // disallow owner reassignment.
-
   req.upload.update(req.body.upload)
     .then(() => res.sendStatus(204))
     .catch(next)
@@ -65,8 +72,18 @@ const update = (req, res, next) => {
 
 const destroy = (req, res, next) => {
   req.upload.remove()
-    .then(() => res.sendStatus(204))
+    .then(() => s3Delete(req.upload.aws_key))
+    .then(() => res.status(200).json({ message: 'Successfully deleted' }))
     .catch(next)
+
+  // Upload.remove({
+  //   _id: req.upload._id
+  // }, function (err, upload) {
+  //   if (err) {
+  //     res.send(err)
+  //   }
+  //   res.json({ message: 'Successfully deleted' })
+  // })
 }
 
 module.exports = controller({
@@ -76,7 +93,7 @@ module.exports = controller({
   update,
   destroy
 }, { before: [
-  { method: setUser, only: ['index', 'show'] },
+  { method: setUser, only: ['index', 'show', 'create'] },
   { method: authenticate, except: ['index', 'show', 'create'] },
   { method: setModel(Upload), only: ['show'] },
   { method: setModel(Upload, { forUser: true }), only: ['update', 'destroy'] },
