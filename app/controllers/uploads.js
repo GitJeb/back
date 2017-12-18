@@ -1,10 +1,9 @@
 'use strict'
-const mongoose = require('../../app/middleware/mongoose')
+// const mongoose = require('../../app/middleware/mongoose')
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
 const Upload = models.upload
-const User = models.user
-
+// const User = models.user
 
 // Multer
 const multer = require('multer')
@@ -67,7 +66,6 @@ const create = (req, res, next) => {
 
 const update = (req, res, next) => {
   delete req.body.upload._owner  // disallow owner reassignment.
-
   req.upload.update(req.body.upload)
     .then(() => res.sendStatus(204))
     .catch(next)
