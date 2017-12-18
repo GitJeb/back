@@ -69,23 +69,6 @@ const update = (req, res, next) => {
   req.upload.update(req.body.upload)
     .then(() => res.sendStatus(204))
     .catch(next)
-  // const options = {
-  //   path: req.file.path,
-  //   title: req.body.image.title,
-  //   mimetype: req.file.mimetype,
-  //   originalname: req.file.originalname
-  // }
-  // s3Upload(options)
-  //   .then((s3response) => {
-  //     return req.upload.update(req.body.upload)
-  //   })
-  //   .then(upload => {
-  //     return res.status(204)
-  //       .json({
-  //         upload: upload.toJSON()
-  //       })
-  //   })
-  //   .catch(next)
 }
 
 const destroy = (req, res, next) => {
