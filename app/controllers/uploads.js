@@ -1,10 +1,9 @@
 'use strict'
-const mongoose = require('../../app/middleware/mongoose')
+// const mongoose = require('../../app/middleware/mongoose')
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
 const Upload = models.upload
-const User = models.user
-
+// const User = models.user
 
 // Multer
 const multer = require('multer')
@@ -46,11 +45,13 @@ const create = (req, res, next) => {
 
   s3Upload(options)
     .then((s3response) => {
+      console.log(s3response)
       const upload = Object.assign(req.body.image, {
         _owner: req.user._id,
         url: s3response['Location'],
         title: options.title,
-        aws_key: s3response.Key
+        aws_key: s3response.Key,
+        file_type: options.mimetype
       })
       return Upload.create(upload)
     })
