@@ -1,10 +1,9 @@
 'use strict'
-const mongoose = require('../../app/middleware/mongoose')
+// const mongoose = require('../../app/middleware/mongoose')
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
 const Upload = models.upload
-const User = models.user
-
+// const User = models.user
 
 // Multer
 const multer = require('multer')
