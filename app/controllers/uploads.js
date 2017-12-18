@@ -68,7 +68,7 @@ const create = (req, res, next) => {
 const update = (req, res, next) => {
   delete req.body.upload._owner  // disallow owner reassignment.
 
-  req.upload.update(req.body.upload.title)
+  req.upload.update(req.body.upload)
     .then(() => res.sendStatus(204))
     .catch(next)
   // const options = {
